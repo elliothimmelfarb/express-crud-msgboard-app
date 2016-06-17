@@ -1,6 +1,6 @@
 'use strict';
 
-const PORT = 8000
+const PORT = process.env.PORT || 8000;
 
 /////////// REQUIRES ///////////
 const express = require('express');
@@ -20,40 +20,48 @@ app.use(express.static('public'));
 
 /////////// ROUTES ///////////
 app.get('/', (req, res) => {
-  res.send('hello word!');
+  res.send('Express CRUD API Message Board!');
 })
 
 app.get('/msgboard', (req, res) => {
   message.get((err, msgs) => {
-    if(err) return res.status(400).send(err);
-    res.send(msgs);
+    res.status(err ? 400 : 200).send(err || msgs);
   });
 });
 
-app.get('/msgboard')
+app.get('/msgboard/:id', (req, res) => {
+  message.getOne(req.params.id, (err, msg) => {
+    res.status(err ? 400 : 200).send(err || msg);
+  });
+});
 
 app.post('/msgboard', (req, res) => {
-  message.create(req.body.author, req.body.text, (err) => {
-    if(err) return res.status(400).send(err);
-    res.send('Posted!');
+  message.create(req.body.author, req.body.text, err => {
+    if(err) res.status(400).send(err);
+    message.get((err, msgs) => {
+      res.status(err ? 400 : 200).send(err || msgs);
+    });
   });
+
 });
 
 app.delete('/msgboard/:id', (req, res) => {
-  message.delete(req.params.id, err => {
-    if(err) return res.status(400).send(err);
-    res.send('Deleted!');
+  message.delete(req.params.id, (err, msgs) => {
+    if(err) res.status(400).send(err);
+    message.get((err, msgs) => {
+      res.status(err ? 400 : 200).send(err || msgs);
+    });
   });
 });
 
-app.put('/msgboard', (req, res) => {
-  message.edit(req.body.id, req.body.text, err => {
-    if(err) return res.status(400).send(err);
-    res.send('Edited!');
+app.put('/msgboard/:id', (req, res) => {
+  message.edit(req.params.id, req.body.text, err => {
+    if(err) res.status(400).send(err);
+    message.get((err, msgs) => {
+      res.status(err ? 400 : 200).send(err || msgs);
+    });
   });
 });
-
-
 
 app.post('/msgs', (req, rest) => {});
 app.delete('/msgs', (req, rest) => {});

@@ -11,13 +11,22 @@ exports.get = cb => {
   readMsgs(cb);
 }
 
+exports.getOne = (id, cb) => {
+  readMsgs((err, msgs) => {
+    let msg = msgs.find(obj => {
+      return obj.id === id;
+    });
+    cb(null, msg);
+  });
+}
+
 exports.create = (author, text, cb) => {
   readMsgs((err, msgs) => {
     let msgObj = {};
     msgObj.author = author;
     msgObj.text = text;
-    msgObj.time = moment().format('MMMM Do YYYY, h:mm:ss a');
     msgObj.id = uuid();
+    msgObj.timestamp = new Date().getTime();
     msgs.push(msgObj);
     writeMsgs(msgs, cb);
   });
@@ -25,29 +34,20 @@ exports.create = (author, text, cb) => {
 
 exports.delete = (id, cb) => {
   readMsgs((err, msgs) => {
-    for(let i = 0; i < msgs.length; i++) {
-      if(msgs[i].id === id) {
-        msgs.splice(i, 1);
-        break;
-      }
-    }
+    msgs = msgs.filter(obj => {
+      return obj.id !== id;
+    });
     writeMsgs(msgs, cb);
   });
 };
 
 exports.edit = (id, text, cb) => {
   readMsgs((err, msgs) => {
-    let index, msgObj;
-    for(let i = 0; i < msgs.length; i++) {
-      if(msgs[i].id === id) {
-        index = i;
-        msgObj = msgs[i];
-        break;
-      }
-    }
+    let msgObj = msgs.find(obj => {
+      return obj.id === id;
+    });
     msgObj.text = text;
     msgObj.edited = moment().format('MMMM Do YYYY, h:mm:ss a');
-    msgs[index] = msgObj;
     writeMsgs(msgs, cb);
   });
 };
