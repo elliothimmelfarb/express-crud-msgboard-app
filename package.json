@@ -11,6 +11,8 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.14.0",
-    "morgan": "^1.7.0"
+    "moment": "^2.13.0",
+    "morgan": "^1.7.0",
+    "uuid": "^2.0.2"
   }
 }
