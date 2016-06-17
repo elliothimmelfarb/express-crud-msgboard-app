@@ -26,7 +26,7 @@ exports.create = (author, text, cb) => {
     msgObj.author = author;
     msgObj.text = text;
     msgObj.id = uuid();
-    msgObj.timestamp = new Date().getTime();
+    msgObj.created = new Date().getTime();
     msgs.push(msgObj);
     writeMsgs(msgs, cb);
   });
@@ -47,7 +47,7 @@ exports.edit = (id, text, cb) => {
       return obj.id === id;
     });
     msgObj.text = text;
-    msgObj.edited = moment().format('MMMM Do YYYY, h:mm:ss a');
+    msgObj.edited = new Date().getTime();
     writeMsgs(msgs, cb);
   });
 };
